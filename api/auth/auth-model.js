@@ -8,10 +8,18 @@ function findBy(filter) {
     return db('users').where(filter)
   }
 
-function findById(id) {
-    return db('users')
-      .select('id', 'username')
+async function findById(id) {
+    const user = await db('users')
+      .select('id', 'username', 'password')
       .where('id', id).first()
+
+    const registeredUser = {
+        id: user[0],
+        username: user[0].username,
+        password: user[0].password
+    }
+
+    return registeredUser
   }
 
 async function add(user) {
