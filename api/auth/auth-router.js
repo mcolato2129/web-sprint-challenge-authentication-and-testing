@@ -1,8 +1,9 @@
 const router = require('express').Router();
 const User = require('./auth-model')
 const bcrypt = require('bcryptjs')
+const { checkUserAndPassword } = require('./auth-middleware')
 
-router.post('/register', (req, res, next) => {
+router.post('/register',  checkUserAndPassword, (req, res, next) => {
   /*
     IMPLEMENT
     You are welcome to build additional middlewares to help with the endpoint's functionality.
