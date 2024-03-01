@@ -13,13 +13,13 @@ async function findById(id) {
       .select('id', 'username', 'password')
       .where('id', id).first()
 
-    const registeredUser = {
-        id: user[0],
-        username: user[0].username,
-        password: user[0].password
-    }
+    // const registeredUser = {
+    //     id: user[0],
+    //     username: user[0].username,
+    //     password: user[0].password
+    // }
 
-    return registeredUser
+    return user
   }
 
 async function add(user) {

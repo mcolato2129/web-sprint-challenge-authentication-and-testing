@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const User = require('./auth-model')
 const bcrypt = require('bcryptjs')
-const { checkUserAndPassword, checkUsername } = require('./auth-middleware')
+const { checkUserAndPassword, checkUsername, checkUsernameExists } = require('./auth-middleware')
 
 router.post('/register',  checkUserAndPassword, checkUsername, (req, res, next) => {
   /*
@@ -31,16 +31,17 @@ router.post('/register',  checkUserAndPassword, checkUsername, (req, res, next) 
   */
   const { username, password } = req.body
   const hash = bcrypt.hashSync(password, 8)
-  User.add({ username, password: hash })
+  User.add({ username: username.trim() , password: hash })
     .then(saved => {
       console.log(saved)
       res.status(201).json(saved)
     })
-    .catch(next)
+    .catch(err => {
+      console.log(next(err))
+    })
 });
 
-router.post('/login', (req, res) => {
-  res.end('implement login, please!');
+router.post('/login', checkUserAndPassword, checkUsernameExists, (req, res, next) => {
   /*
     IMPLEMENT
     You are welcome to build additional middlewares to help with the endpoint's functionality.
@@ -64,6 +65,17 @@ router.post('/login', (req, res) => {
     4- On FAILED login due to `username` not existing in the db, or `password` being incorrect,
       the response body should include a string exactly as follows: "invalid credentials".
   */
+
+      const { password } = req.body;
+  if(bcrypt.compareSync(password, req.user.password)) {
+    // make it so the cookie is set on the client
+    // make it so server stores a session with a session id
+    req.session.user = req.user
+    res.json({ message: `Welcome ${req.user.username}` })
+  } else {
+    next({ status: 401, message: 'Invalid credentials' })
+  }
+
 });
 
 module.exports = router;

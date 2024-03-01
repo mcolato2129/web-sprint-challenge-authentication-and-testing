@@ -5,9 +5,9 @@ async function checkUserAndPassword(req, res, next) {
       const { username, password } = req.body
       if(
         !username || 
-        username.trim() === null || !
-        password) {
-            next({ message: "username and password required", status: 422 })
+        !username.trim() || 
+        !password ) {
+            res.status(422).json({ message: "username and password required" })
         } else {
             next()
         }
@@ -23,7 +23,22 @@ async function checkUserAndPassword(req, res, next) {
         next()
       }
       else {
-        next({ message: "username taken", status: 422 })
+        res.status(422).json({ message: "username taken" })
+      }
+    } catch (err) {
+      next(err)
+    }
+  }
+
+  async function checkUsernameExists(req, res, next) {
+    try {
+      const users = await User.findBy({ username: req.body.username })
+      if (users.length) {
+        req.user = users[0]
+        next()
+      }
+      else {
+        res.status(401).json({ message: "invalid credentials"  })
       }
     } catch (err) {
       next(err)
@@ -32,5 +47,6 @@ async function checkUserAndPassword(req, res, next) {
 
   module.exports = {
     checkUserAndPassword,
-    checkUsername
+    checkUsername,
+    checkUsernameExists,
   }
