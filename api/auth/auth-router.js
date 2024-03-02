@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const User = require('./auth-model')
 const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
 const { checkUserAndPassword, checkUsername, checkUsernameExists } = require('./auth-middleware')
 
 router.post('/register',  checkUserAndPassword, checkUsername, (req, res, next) => {
@@ -66,16 +67,24 @@ router.post('/login', checkUserAndPassword, checkUsernameExists, (req, res, next
       the response body should include a string exactly as follows: "invalid credentials".
   */
 
-      const { password } = req.body;
-  if(bcrypt.compareSync(password, req.user.password)) {
-    // make it so the cookie is set on the client
-    // make it so server stores a session with a session id
-    req.session.user = req.user
-    res.json({ message: `Welcome ${req.user.username}` })
-  } else {
-    next({ status: 401, message: 'Invalid credentials' })
-  }
-
+      if(bcrypt.compareSync(req.body.password, req.user.password)) {
+        const token = buildToken(req.user)
+        res.json({
+          message: `welcome, ${req.user.username}`,
+          token,
+        })
+      }
 });
+
+function buildToken(user) {
+  const payload = {
+    username: user.username,
+    password: user.password,
+  }
+  const options = {
+    expiresIn: '1h',
+  }
+  return jwt.sign(payload, options)
+}
 
 module.exports = router;
