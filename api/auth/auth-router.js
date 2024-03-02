@@ -84,7 +84,7 @@ function buildToken(user) {
   const options = {
     expiresIn: '1h',
   }
-  return jwt.sign(payload, options)
+  return jwt.sign(payload,'yourSecretKey', options)
 }
 
 module.exports = router;
