@@ -73,6 +73,8 @@ router.post('/login', checkUserAndPassword, checkUsernameExists, (req, res, next
           message: `welcome, ${req.user.username}`,
           token,
         })
+      } else {
+        res.status(422).json('incorrect password')
       }
 });
 
