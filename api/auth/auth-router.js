@@ -42,7 +42,7 @@ router.post('/register',  checkUserAndPassword, checkUsername, (req, res, next) 
     })
 });
 
-router.post('/login', checkUserAndPassword, checkUsernameExists, (req, res, next) => {
+router.post('/login', checkUserAndPassword, checkUsernameExists, (req, res, next) => { 
   /*
     IMPLEMENT
     You are welcome to build additional middlewares to help with the endpoint's functionality.
@@ -74,7 +74,7 @@ router.post('/login', checkUserAndPassword, checkUsernameExists, (req, res, next
           token,
         })
       } else {
-        res.status(422).json('incorrect password')
+        res.status(422).json('invalid credentials')
       }
 });
 
